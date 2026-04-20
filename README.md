@@ -1,59 +1,56 @@
-# SkillMarket
+# Skill Market - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.7.
+A modern Angular 21 application for managing freelance projects and skills marketplace. Built with standalone components, Bootstrap 5, and Keycloak authentication.
 
-## Development server
+## 📋 Prerequisites
 
-To start a local development server, run:
+Before you begin, ensure you have the following installed:
+- **Node.js**: v18+ ([Download](https://nodejs.org/))
+- **npm**: v10+ (comes with Node.js)
+- **Angular CLI**: v21+ (optional but recommended)
+  ```bash
+  npm install -g @angular/cli@21
+  ```
+
+## 🚀 Getting Started
+
+### 1. Installation
+
+Clone the repository and install dependencies:
+
+```bash
+# Install dependencies
+npm install
+```
+
+### 2. Backend & Authentication Setup
+
+This application requires:
+- **Keycloak** server running on `http://localhost:8080`
+- **Backend API** running on `http://localhost:8080/api/v1`
+
+#### Using Docker Compose (Recommended)
+
+Start Keycloak and PostgreSQL:
+
+```bash
+docker-compose -f docker/keycloak/docker-compose.yml up -d
+```
+
+The Keycloak admin console will be available at `http://localhost:8080`
+
+### 3. Development Server
+
+Start the Angular development server:
+
+```bash
+npm start
+```
+
+Or use the Angular CLI directly:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The application will be available at `http://localhost:4200/`. The browser will automatically reload when you modify source files.
