@@ -1,10 +1,11 @@
 import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NavComponent } from './nav/nav.component';
 import { KeycloakService } from './keycloak.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NavComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
