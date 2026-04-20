@@ -26,18 +26,8 @@ npm install
 ### 2. Backend & Authentication Setup
 
 This application requires:
-- **Keycloak** server running on `http://localhost:8080`
+- **Keycloak** server running on `http://localhost:8081`
 - **Backend API** running on `http://localhost:8080/api/v1`
-
-#### Using Docker Compose (Recommended)
-
-Start Keycloak and PostgreSQL:
-
-```bash
-docker-compose -f docker/keycloak/docker-compose.yml up -d
-```
-
-The Keycloak admin console will be available at `http://localhost:8080`
 
 ### 3. Development Server
 

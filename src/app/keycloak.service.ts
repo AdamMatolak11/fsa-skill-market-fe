@@ -25,14 +25,6 @@ export class KeycloakService {
     }
   }
 
-  getKeycloak(): Keycloak | undefined {
-    return this.keycloak;
-  }
-
-  login(options?: Keycloak.KeycloakLoginOptions): Promise<void> {
-    return this.keycloak?.login(options) || Promise.reject('Keycloak not initialized');
-  }
-
   logout(options?: Keycloak.KeycloakLogoutOptions): Promise<void> {
     return this.keycloak?.logout(options) || Promise.reject('Keycloak not initialized');
   }

@@ -5,45 +5,6 @@
   min-height: calc(100vh - 56px); /* Subtract navbar height */
 }
 
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.app-header h1 {
-  margin: 0;
-  color: #495057;
-}
-
-.auth-section {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.auth-section span {
-  color: #495057;
-  font-weight: 500;
-}
-
-.auth-section button {
-  padding: 0.5rem 1rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.auth-section button:hover {
-  background-color: #0056b3;
-}
-
 .app-main {
   flex: 1;
   padding: 2rem;
