@@ -59,14 +59,14 @@
   margin-bottom: 0;
 
   .page-link {
-    color: #0d6efd;
+    color: #007474;
     border: 1px solid #dee2e6;
     padding: 0.5rem 0.75rem;
     background-color: #fff;
     
     &:hover {
       background-color: #e9ecef;
-      color: #0d6efd;
+      color: #007474;
       border-color: #dee2e6;
     }
 
@@ -76,11 +76,18 @@
       cursor: not-allowed;
       border-color: #dee2e6;
     }
+
+    &:active {
+      color: #6c757d;
+      background-color: #f8f9fa;
+      cursor: not-allowed;
+      border-color: #dee2e6;
+    }
   }
 
   .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
+    background-color: #007474;
+    border-color: #007474;
     color: #fff;
   }
 }
