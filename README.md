@@ -42,3 +42,7 @@ Or use the Angular CLI directly:
 ```bash
 ng serve
 ```
+
+## Backend repository
+
+https://github.com/AdamMatolak11/fsa-skill-market
