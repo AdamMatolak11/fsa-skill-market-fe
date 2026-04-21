@@ -1,0 +1,79 @@
+<div class="modal" [class.show]="isOpen()" [style.display]="isOpen() ? 'block' : 'none'" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Project</h5>
+        <button type="button" class="btn-close" [disabled]="isSubmitting()" (click)="close()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="error()" class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ error() }}
+          <button type="button" class="btn-close" (click)="error.set(null)"></button>
+        </div>
+
+        <form (ngSubmit)="submitForm()" #projectForm="ngForm">
+          <div class="mb-3">
+            <label for="title" class="form-label">Project Title</label>
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              [(ngModel)]="title"
+              name="title"
+              placeholder="Enter project title"
+              [disabled]="isSubmitting()"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              id="description"
+              [(ngModel)]="description"
+              name="description"
+              rows="3"
+              placeholder="Enter project description"
+              [disabled]="isSubmitting()"
+              required
+            ></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="budget" class="form-label">Budget ($)</label>
+            <input
+              type="number"
+              class="form-control"
+              id="budget"
+              [(ngModel)]="budget"
+              name="budget"
+              placeholder="Enter budget"
+              step="0.01"
+              min="0.01"
+              [disabled]="isSubmitting()"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()" [disabled]="isSubmitting()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="submitForm()"
+          [disabled]="isSubmitting()"
+        >
+          <span *ngIf="isSubmitting()" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          {{ isSubmitting() ? 'Creating...' : 'Create Project' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div *ngIf="isOpen()" class="modal-backdrop fade show"></div>

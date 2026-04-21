@@ -1,0 +1,15 @@
+.modal {
+  transition: opacity 0.15s linear;
+
+  &.show {
+    opacity: 1;
+  }
+}
+
+.modal-dialog {
+  z-index: 1050;
+}
+
+.modal-backdrop {
+  z-index: 1040;
+}

@@ -1,22 +1,36 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjectService } from './project.service';
 import { Project } from './project.model';
+import { KeycloakService } from '../keycloak.service';
+import { CreateProjectModalComponent } from './create-project-modal/create-project-modal.component';
 
 @Component({
   selector: 'app-projects',
-  imports: [CommonModule],
+  imports: [CommonModule, CreateProjectModalComponent],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.scss'
 })
 export class ProjectsComponent implements OnInit {
+  @ViewChild(CreateProjectModalComponent) createProjectModal!: CreateProjectModalComponent;
+
   private projectService = inject(ProjectService);
+  private keycloakService = inject(KeycloakService);
 
   projects = signal<Project[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+  isClientRole = computed(() => this.keycloakService.hasRole('CLIENT'));
 
   ngOnInit(): void {
+    this.loadProjects();
+  }
+
+  openCreateModal(): void {
+    this.createProjectModal.open();
+  }
+
+  onProjectCreated(): void {
     this.loadProjects();
   }
 

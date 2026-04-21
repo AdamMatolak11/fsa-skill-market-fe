@@ -20,6 +20,11 @@ export class ProjectService {
     return this.http.get<Project[]>(this.apiUrl, { headers });
   }
 
+  createProject(data: { title: string; description: string; budget: number }): Observable<Project> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<Project>(this.apiUrl, data, { headers });
+  }
+
   private getAuthHeaders(): HttpHeaders {
     const token = this.keycloakService.getToken();
     return new HttpHeaders({

@@ -51,4 +51,20 @@
       </div>
     </div>
   </div>
+
+  <!-- Floating Create Button (visible only for CLIENT role) -->
+  <button
+    *ngIf="isClientRole() && !loading()"
+    class="btn btn-primary floating-create-btn"
+    (click)="openCreateModal()"
+    title="Create new project"
+  >
+    <span class="btn-icon">+</span>
+  </button>
 </div>
+
+<!-- Create Project Modal -->
+<app-create-project-modal
+  (projectCreated)="onProjectCreated()"
+></app-create-project-modal>
+

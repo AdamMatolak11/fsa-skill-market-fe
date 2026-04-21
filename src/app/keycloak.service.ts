@@ -13,7 +13,7 @@ export class KeycloakService {
     this.keycloak = new Keycloak({
       url: 'http://localhost:8081',
       realm: 'skill-market',
-      clientId: 'account-console'
+      clientId: 'skill-market-client'
     });
 
     try {
@@ -43,5 +43,16 @@ export class KeycloakService {
 
   updateToken(minValidity: number = 5): Promise<boolean> {
     return this.keycloak?.updateToken(minValidity) || Promise.resolve(false);
+  }
+
+  getRoles(): string[] {
+    const tokenParsed = this.keycloak?.tokenParsed as any;
+    const clientRoles = tokenParsed?.['resource_access']?.['skill-market-client']?.['roles'] || [];
+    return clientRoles;
+  }
+
+  hasRole(role: string): boolean {
+    console.log('User roles:', this.getRoles());
+    return this.getRoles().includes(role);
   }
 }
