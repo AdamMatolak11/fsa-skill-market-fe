@@ -42,5 +42,3 @@ Or use the Angular CLI directly:
 ```bash
 ng serve
 ```
-
-The application will be available at `http://localhost:4200/`. The browser will automatically reload when you modify source files.
