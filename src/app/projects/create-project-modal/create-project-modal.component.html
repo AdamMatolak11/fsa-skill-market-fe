@@ -13,47 +13,54 @@
 
         <form (ngSubmit)="submitForm()" #projectForm="ngForm">
           <div class="mb-3">
-            <label for="title" class="form-label">Project Title</label>
-            <input
-              type="text"
-              class="form-control"
-              id="title"
-              [(ngModel)]="title"
-              name="title"
-              placeholder="Enter project title"
-              [disabled]="isSubmitting()"
-              required
-            />
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                id="title"
+                [(ngModel)]="title"
+                name="title"
+                placeholder="Enter project title"
+                [disabled]="isSubmitting()"
+                required
+              />
+              <label for="title">Project Title</label>
+            </div>
           </div>
 
           <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea
-              class="form-control"
-              id="description"
-              [(ngModel)]="description"
-              name="description"
-              rows="3"
-              placeholder="Enter project description"
-              [disabled]="isSubmitting()"
-              required
-            ></textarea>
+            <div class="form-floating">
+              <textarea
+                class="form-control"
+                id="description"
+                [(ngModel)]="description"
+                name="description"
+                rows="3"
+                placeholder="Enter project description"
+                [disabled]="isSubmitting()"
+                required
+                style="height: 120px;"
+              ></textarea>
+              <label for="description">Description</label>
+            </div>
           </div>
 
           <div class="mb-3">
-            <label for="budget" class="form-label">Budget (€)</label>
-            <input
-              type="number"
-              class="form-control"
-              id="budget"
-              [(ngModel)]="budget"
-              name="budget"
-              placeholder="Enter budget"
-              step="0.01"
-              min="0.01"
-              [disabled]="isSubmitting()"
-              required
-            />
+            <div class="form-floating">
+              <input
+                type="number"
+                class="form-control"
+                id="budget"
+                [(ngModel)]="budget"
+                name="budget"
+                placeholder="Enter budget"
+                step="0.01"
+                min="0.01"
+                [disabled]="isSubmitting()"
+                required
+              />
+              <label for="budget">Budget (€)</label>
+            </div>
           </div>
         </form>
       </div>

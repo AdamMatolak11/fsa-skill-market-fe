@@ -1,5 +1,15 @@
+$primary: #00ffff;
+$secondary: #647373;
+$success: #28c76f;
+$info: #00cfdd;
+$warning: #ff9f43;
+$danger: #ea5455;
+$light: #f0ffff;
+$dark: #22292f;
+
 /* You can add global styles to this file, and also import other style files */
-@import 'bootstrap/dist/css/bootstrap.min.css';
+
+@import "bootstrap/scss/bootstrap";
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 body {
