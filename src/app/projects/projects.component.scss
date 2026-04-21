@@ -7,6 +7,84 @@
   font-size: 0.75rem;
 }
 
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+
+  h5 {
+    font-weight: 600;
+  }
+}
+
+.card {
+  border: 1px solid #dee2e6;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-floating {
+  > label {
+    color: #6c757d;
+  }
+
+  > .form-control,
+  > .form-select {
+    &:focus {
+      ~ label {
+        color: #0d6efd;
+      }
+    }
+
+    &:not(:placeholder-shown) {
+      ~ label {
+        color: #6c757d;
+      }
+    }
+  }
+}
+
+.btn-link {
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.pagination {
+  margin-bottom: 0;
+
+  .page-link {
+    color: #0d6efd;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.75rem;
+    background-color: #fff;
+    
+    &:hover {
+      background-color: #e9ecef;
+      color: #0d6efd;
+      border-color: #dee2e6;
+    }
+
+    &:disabled {
+      color: #6c757d;
+      background-color: #f8f9fa;
+      cursor: not-allowed;
+      border-color: #dee2e6;
+    }
+  }
+
+  .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+  }
+}
+
 .floating-create-btn {
   position: fixed;
   bottom: 30px;
@@ -42,4 +120,5 @@
     width: 100%;
   }
 }
+
 

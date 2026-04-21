@@ -1,0 +1,45 @@
+.project-detail-container {
+  padding: 20px 0;
+}
+
+.back-button-container {
+  display: flex;
+  align-items: center;
+}
+
+.card-header {
+  padding: 1.5rem;
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+  }
+}
+
+.card-body {
+  padding: 2rem;
+
+  h5 {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .lead {
+    font-size: 1.1rem;
+    margin-bottom: 0;
+  }
+
+  code {
+    background-color: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    color: #d63384;
+  }
+}
+
+.badge {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+}
