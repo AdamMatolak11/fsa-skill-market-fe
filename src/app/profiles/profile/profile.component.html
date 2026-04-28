@@ -1,0 +1,170 @@
+<div class="container mt-4">
+  @if (loading && !profile) {
+    <div class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  @if (error) {
+    <div class="alert alert-danger">{{ error }}</div>
+  }
+
+  @if (success) {
+    <div class="alert alert-success alert-dismissible fade show">
+      {{ success }}
+      <button type="button" class="btn-close" (click)="success = null"></button>
+    </div>
+  }
+
+  @if (profile) {
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">My Profile</h3>
+            <button
+              class="btn btn-outline-primary btn-sm"
+              (click)="toggleEditMode()"
+              [disabled]="loading"
+            >
+              @if (!editMode) {
+                Edit Profile
+              } @else {
+                Cancel
+              }
+            </button>
+          </div>
+
+          <div class="card-body">
+            @if (!editMode) {
+              <!-- View Mode -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <p><strong>Display Name:</strong></p>
+                  <p>{{ profile.displayName }}</p>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>Email:</strong></p>
+                  <p>{{ profile.email }}</p>
+                </div>
+              </div>
+
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <p><strong>Role:</strong></p>
+                  <span class="badge bg-primary">{{ profile.role }}</span>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>Rating:</strong></p>
+                  <span [ngClass]="'badge bg-' + getRatingColor(profile.averageRating)">
+                    ⭐ {{ profile.averageRating | number: '1.1-1' }} ({{ profile.ratingCount }} ratings)
+                  </span>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <p><strong>Bio:</strong></p>
+                <p>{{ profile.bio || 'No bio added' }}</p>
+              </div>
+
+              @if (profile.skills.length > 0) {
+                <div class="mb-4">
+                  <p><strong>Skills:</strong></p>
+                  <div>
+                    @for (skill of profile.skills; track skill) {
+                      <span class="badge bg-secondary me-2">{{ skill }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            } @else {
+              <!-- Edit Mode -->
+              <form>
+                <div class="mb-3">
+                  <label class="form-label"><strong>Display Name</strong></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="formData.displayName"
+                    name="displayName"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label"><strong>Bio</strong></label>
+                  <textarea
+                    class="form-control"
+                    rows="4"
+                    [(ngModel)]="formData.bio"
+                    name="bio"
+                  ></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label"><strong>Skills</strong></label>
+                  <div class="input-group mb-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="skillInput"
+                      name="skillInput"
+                      placeholder="Add a skill..."
+                      (keyup.enter)="addSkill()"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      (click)="addSkill()"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  @if (formData.skills.length > 0) {
+                    <div>
+                      @for (skill of formData.skills; track skill) {
+                        <span class="badge bg-secondary me-2">
+                          {{ skill }}
+                          <button
+                            type="button"
+                            class="btn-close btn-close-white ms-1"
+                            (click)="removeSkill(skill)"
+                            style="font-size: 0.65rem"
+                          ></button>
+                        </span>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    (click)="toggleEditMode()"
+                    [disabled]="loading"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    (click)="saveProfile()"
+                    [disabled]="loading"
+                  >
+                    @if (loading) {
+                      <span class="spinner-border spinner-border-sm me-2"></span>
+                    }
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

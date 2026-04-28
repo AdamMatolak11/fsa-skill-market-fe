@@ -41,6 +41,10 @@ export class KeycloakService {
     return this.keycloak?.tokenParsed?.['preferred_username'];
   }
 
+  getUserId(): string {
+    return this.keycloak?.tokenParsed?.['sub'] || '';
+  }
+
   updateToken(minValidity: number = 5): Promise<boolean> {
     return this.keycloak?.updateToken(minValidity) || Promise.resolve(false);
   }

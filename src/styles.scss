@@ -9,7 +9,7 @@ $dark: #22292f;
 
 /* You can add global styles to this file, and also import other style files */
 
-@import "bootstrap/scss/bootstrap";
+@use "bootstrap/scss/bootstrap";
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 body {
