@@ -19,15 +19,15 @@ import { Project, UpdateProjectRequest } from '../project.model';
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Title</label>
-              <input type="text" class="form-control" [(ngModel)]="formData.title" />
+              <input type="text" class="form-control" [ngModel]="formData().title" (ngModelChange)="updateFormData('title', $event)" />
             </div>
             <div class="mb-3">
               <label class="form-label">Description</label>
-              <textarea class="form-control" [(ngModel)]="formData.description" rows="3"></textarea>
+              <textarea class="form-control" [ngModel]="formData().description" (ngModelChange)="updateFormData('description', $event)" rows="3"></textarea>
             </div>
             <div class="mb-3">
               <label class="form-label">Budget</label>
-              <input type="number" class="form-control" [(ngModel)]="formData.budget" />
+              <input type="number" class="form-control" [ngModel]="formData().budget" (ngModelChange)="updateFormData('budget', $event)" />
             </div>
             @if (error()) {
               <div class="alert alert-danger">{{ error() }}</div>
@@ -67,6 +67,14 @@ export class EditProjectModalComponent {
     this.error.set(null);
     const modal = new (window as any).bootstrap.Modal(document.getElementById('editProjectModal'));
     modal.show();
+  }
+
+  updateFormData(field: 'title' | 'description' | 'budget', value: string | number): void {
+    const current = this.formData();
+    this.formData.set({
+      ...current,
+      [field]: value
+    });
   }
 
   save(): void {
