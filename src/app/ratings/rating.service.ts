@@ -8,7 +8,7 @@ import { KeycloakService } from '../keycloak.service';
   providedIn: 'root'
 })
 export class RatingService {
-  private apiUrl = 'http://localhost:8080/api/v1/projects';
+  private apiUrl = '/api/v1/projects';
 
   constructor(
     private http: HttpClient,

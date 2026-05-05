@@ -11,7 +11,7 @@ export class KeycloakService {
 
   async init(options?: Keycloak.KeycloakInitOptions): Promise<boolean> {
     this.keycloak = new Keycloak({
-      url: 'http://localhost:8081',
+      url: `${window.location.origin}/auth`,
       realm: 'skill-market',
       clientId: 'skill-market-client'
     });

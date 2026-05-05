@@ -8,7 +8,7 @@ import { KeycloakService } from '../keycloak.service';
   providedIn: 'root'
 })
 export class FreelancerService {
-  private apiUrl = 'http://localhost:8080/api/v1/freelancers';
+  private apiUrl = '/api/v1/freelancers';
 
   constructor(
     private http: HttpClient,
