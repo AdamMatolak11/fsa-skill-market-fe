@@ -12,7 +12,7 @@ variables:
 build:
   stage: build
   tags:
-    - fsa
+    - fsa-matolak
   image: docker:latest
   services:
     - docker:dind
