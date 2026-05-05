@@ -1,0 +1,30 @@
+.rating-section {
+  margin-top: 1rem;
+}
+
+.rating-form {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+
+.rating-selector {
+  display: flex;
+  gap: 0.5rem;
+
+  .btn {
+    font-size: 1.5rem;
+    padding: 0.5rem 0.75rem;
+    transition: transform 0.1s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

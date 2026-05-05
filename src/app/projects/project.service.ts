@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Project } from './project.model';
+import { Project, CreateProjectRequest, UpdateProjectRequest } from './project.model';
 import { KeycloakService } from '../keycloak.service';
 
 @Injectable({
@@ -20,9 +20,24 @@ export class ProjectService {
     return this.http.get<Project[]>(this.apiUrl, { headers });
   }
 
-  createProject(data: { title: string; description: string; budget: number }): Observable<Project> {
+  getProject(projectId: string): Observable<Project> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<Project>(`${this.apiUrl}/${projectId}`, { headers });
+  }
+
+  createProject(data: CreateProjectRequest): Observable<Project> {
     const headers = this.getAuthHeaders();
     return this.http.post<Project>(this.apiUrl, data, { headers });
+  }
+
+  updateProject(projectId: string, data: UpdateProjectRequest): Observable<Project> {
+    const headers = this.getAuthHeaders();
+    return this.http.put<Project>(`${this.apiUrl}/${projectId}`, data, { headers });
+  }
+
+  cancelProject(projectId: string): Observable<void> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete<void>(`${this.apiUrl}/${projectId}`, { headers });
   }
 
   private getAuthHeaders(): HttpHeaders {

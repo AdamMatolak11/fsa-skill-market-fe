@@ -1,0 +1,90 @@
+<div class="rating-section">
+  @if (success) {
+    <div class="alert alert-success alert-dismissible fade show">
+      {{ success }}
+      <button type="button" class="btn-close" (click)="success = null"></button>
+    </div>
+  }
+
+  @if (!showForm) {
+    @if (canRate()) {
+      <button class="btn btn-primary" (click)="openRatingForm()">
+        Rate Freelancer
+      </button>
+    }
+  } @else {
+    <div class="card mt-3">
+      <div class="card-header">
+        <h5 class="mb-0">Rate Freelancer</h5>
+      </div>
+      <div class="card-body">
+        @if (error) {
+          <div class="alert alert-danger">{{ error }}</div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label"><strong>Rating Score</strong></label>
+          <div class="rating-selector">
+            @for (i of [1, 2, 3, 4, 5]; track i) {
+              <button
+                type="button"
+                class="btn"
+                [ngClass]="i <= formData.score ? 'btn-warning' : 'btn-outline-warning'"
+                (click)="formData.score = i"
+              >
+                ⭐
+              </button>
+            }
+          </div>
+          <small class="text-muted d-block mt-2">
+            Selected: {{ formData.score }} star(s)
+          </small>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label"><strong>Comment</strong></label>
+          <textarea
+            class="form-control"
+            rows="3"
+            [(ngModel)]="formData.comment"
+            placeholder="Share your experience working with this freelancer..."
+          ></textarea>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="closeForm()"
+            [disabled]="loading"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="submitRating()"
+            [disabled]="loading || !formData.comment.trim()"
+          >
+            @if (loading) {
+              <span class="spinner-border spinner-border-sm me-2"></span>
+            }
+            Submit Rating
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<style>
+  .rating-selector {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .rating-selector .btn {
+    font-size: 1.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+</style>
