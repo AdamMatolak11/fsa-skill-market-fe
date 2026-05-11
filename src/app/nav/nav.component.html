@@ -14,9 +14,11 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/projects" routerLinkActive="active">Projects</a>
         </li>
-        <li class="nav-item" *ngIf="keycloakService.hasRole('CLIENT')">
-          <a class="nav-link" routerLink="/freelancers" routerLinkActive="active">Find Freelancers</a>
-        </li>
+        @if (keycloakService.hasRole('CLIENT')) {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/freelancers" routerLinkActive="active">Find Freelancers</a>
+          </li>
+        }
       </ul>
 
       <ul class="navbar-nav">

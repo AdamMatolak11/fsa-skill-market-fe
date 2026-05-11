@@ -51,8 +51,8 @@ export class KeycloakService {
 
   getRoles(): string[] {
     const tokenParsed = this.keycloak?.tokenParsed as any;
-    const clientRoles = tokenParsed?.['resource_access']?.['skill-market-client']?.['roles'] || [];
-    return clientRoles;
+    const realmRoles = tokenParsed?.['realm_access']?.['roles'] || [];
+    return realmRoles;
   }
 
   hasRole(role: string): boolean {
