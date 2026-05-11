@@ -34,8 +34,9 @@
     </div>
   }
 
-  <div class="row" *ngIf="!loading">
-    @for (freelancer of freelancers; track freelancer.id) {
+  @if (!loading) {
+    <div class="row">
+      @for (freelancer of freelancers; track freelancer.id) {
       <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
           <div class="card-body">
@@ -67,8 +68,9 @@
           </div>
         </div>
       </div>
-    }
-  </div>
+      }
+    </div>
+  }
 
   @if (freelancers.length === 0 && !loading && !error) {
     <div class="alert alert-info">No freelancers found. Try a different search.</div>

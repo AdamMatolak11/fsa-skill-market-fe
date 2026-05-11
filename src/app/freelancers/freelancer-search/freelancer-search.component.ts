@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { FreelancerService } from '../freelancer.service';
 import { Freelancer } from '../freelancer.model';
 
@@ -9,7 +9,7 @@ import { Freelancer } from '../freelancer.model';
   selector: 'app-freelancer-search',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, RouterLink],
   templateUrl: './freelancer-search.component.html',
   styleUrl: './freelancer-search.component.scss'
 })
