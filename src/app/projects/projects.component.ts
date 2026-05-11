@@ -103,7 +103,7 @@ export class ProjectsComponent implements OnInit {
     this.selectedProject.set(null);
   }
 
-  private loadProjects(): void {
+  loadProjects(): void {
     this.loading.set(true);
     this.error.set(null);
 
