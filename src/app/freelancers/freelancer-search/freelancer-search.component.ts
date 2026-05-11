@@ -25,7 +25,7 @@ export class FreelancerSearchComponent implements OnInit {
   }
 
   loadFreelancers(): void {
-    this.loading = true;
+    // this.loading = true;
     this.error = null;
 
     this.freelancerService.searchFreelancers(this.searchSkill || undefined).subscribe({
