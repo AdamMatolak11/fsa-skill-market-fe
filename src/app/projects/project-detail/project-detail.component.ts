@@ -29,6 +29,22 @@ export class ProjectDetailComponent {
 
   editData = { title: '', description: '', budget: 0 };
 
+  loadProject(): void {
+    if (!this.project) return;
+    this.loading = true;
+    this.projectService.getProject(this.project.id).subscribe({
+      next: (project) => {
+        this.project = project;
+        this.projectUpdated.emit(project);
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = err.error?.message || 'Failed to refresh project';
+      }
+    });
+  }
+
   goBack(): void {
     this.backClicked.emit();
   }

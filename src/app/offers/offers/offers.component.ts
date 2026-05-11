@@ -1,4 +1,4 @@
-import { Component, Input, inject, OnInit } from '@angular/core';
+import { Component, Input, inject, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OfferService } from '../offer.service';
@@ -15,6 +15,7 @@ import { Project } from '../../projects/project.model';
 })
 export class OffersComponent implements OnInit {
   @Input() project: Project | null = null;
+  @Output() offerAccepted = new EventEmitter<void>();
 
   private offerService = inject(OfferService);
   private keycloakService = inject(KeycloakService);
@@ -52,11 +53,15 @@ export class OffersComponent implements OnInit {
 
     if (!confirm('Are you sure you want to accept this offer?')) return;
 
+    this.loading = true;
     this.offerService.acceptOffer(this.project.id, offer.id).subscribe({
       next: () => {
+        this.loading = false;
+        this.offerAccepted.emit();
         this.loadOffers();
       },
       error: (err) => {
+        this.loading = false;
         alert(err.error?.message || 'Failed to accept offer');
       }
     });
@@ -67,11 +72,14 @@ export class OffersComponent implements OnInit {
 
     if (!confirm('Are you sure you want to reject this offer?')) return;
 
+    this.loading = true;
     this.offerService.rejectOffer(this.project.id, offer.id).subscribe({
       next: () => {
+        this.loading = false;
         this.loadOffers();
       },
       error: (err) => {
+        this.loading = false;
         alert(err.error?.message || 'Failed to reject offer');
       }
     });
@@ -82,11 +90,14 @@ export class OffersComponent implements OnInit {
 
     if (!confirm('Are you sure you want to cancel this offer?')) return;
 
+    this.loading = true;
     this.offerService.cancelOffer(this.project.id, offer.id).subscribe({
       next: () => {
+        this.loading = false;
         this.loadOffers();
       },
       error: (err) => {
+        this.loading = false;
         alert(err.error?.message || 'Failed to cancel offer');
       }
     });

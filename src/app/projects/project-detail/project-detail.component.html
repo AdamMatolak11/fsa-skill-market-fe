@@ -1,10 +1,17 @@
-<div class="project-detail-container">
+<div class="container mt-4">
   <div class="back-button-container mb-4">
     <button class="btn btn-outline-secondary" (click)="goBack()">
       <i class="bi bi-arrow-left"></i> Back to List
     </button>
   </div>
 
+  @if (loading && !project) {
+    <div class="text-center my-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
   @if (error) {
     <div class="alert alert-danger alert-dismissible fade show">
       {{ error }}
@@ -123,6 +130,9 @@
             [disabled]="loading"
           >
             Cancel Project
+            @if (loading) {
+              <span class="spinner-border spinner-border-sm ms-1"></span>
+            }
           </button>
         </div>
       }
@@ -130,17 +140,17 @@
 
     <!-- Submit Offer Section for Freelancers -->
     <div class="mt-4">
-      <app-create-offer [project]="project"></app-create-offer>
+      <app-create-offer [project]="project" (offerCreated)="loadProject()"></app-create-offer>
     </div>
 
     <!-- Offers Section -->
     <div class="mt-4">
-      <app-offers [project]="project"></app-offers>
+      <app-offers [project]="project" (offerAccepted)="loadProject()"></app-offers>
     </div>
 
     <!-- Rating Section -->
     <div class="mt-4">
-      <app-rating [project]="project"></app-rating>
+      <app-rating [project]="project" (ratingSubmitted)="loadProject()"></app-rating>
     </div>
   }
 </div>

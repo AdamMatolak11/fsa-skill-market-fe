@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RatingService } from '../rating.service';
@@ -15,6 +15,7 @@ import { Project } from '../../projects/project.model';
 })
 export class RatingComponent {
   @Input() project: Project | null = null;
+  @Output() ratingSubmitted = new EventEmitter<void>();
 
   private ratingService = inject(RatingService);
   private keycloakService = inject(KeycloakService);
@@ -51,6 +52,7 @@ export class RatingComponent {
         this.loading = false;
         this.success = 'Rating submitted successfully';
         this.showForm = false;
+        this.ratingSubmitted.emit();
         setTimeout(() => (this.success = null), 3000);
       },
       error: (err) => {

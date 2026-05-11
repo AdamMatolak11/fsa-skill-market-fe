@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ProfileService } from '../profile.service';
 import { KeycloakService } from '../../keycloak.service';
 import { UserProfile, UpdateProfileRequest } from '../profile.model';
@@ -15,12 +16,14 @@ import { UserProfile, UpdateProfileRequest } from '../profile.model';
 export class ProfileComponent implements OnInit {
   private profileService = inject(ProfileService);
   private keycloakService = inject(KeycloakService);
+  private route = inject(ActivatedRoute);
 
   profile: UserProfile | null = null;
   loading = false;
   error: string | null = null;
   success: string | null = null;
   editMode = false;
+  isOwnProfile = true;
 
   formData: UpdateProfileRequest = {
     displayName: '',
@@ -31,21 +34,30 @@ export class ProfileComponent implements OnInit {
   skillInput = '';
 
   ngOnInit(): void {
-    this.loadProfile();
+    this.route.params.subscribe(params => {
+      const userId = params['userId'];
+      if (userId) {
+        this.isOwnProfile = userId === this.keycloakService.getUserId();
+        this.loadProfile(userId);
+      } else {
+        this.isOwnProfile = true;
+        this.loadProfile();
+      }
+    });
   }
 
-  loadProfile(): void {
+  loadProfile(userId?: string): void {
     this.loading = true;
     this.error = null;
 
-    const userId = this.keycloakService.getUserId();
-    if (!userId) {
+    const targetUserId = userId || this.keycloakService.getUserId();
+    if (!targetUserId) {
       this.error = 'User ID not found';
       this.loading = false;
       return;
     }
 
-    this.profileService.getProfile(userId).subscribe({
+    this.profileService.getProfile(targetUserId).subscribe({
       next: (data) => {
         this.profile = data;
         this.formData = {

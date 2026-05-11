@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OfferService } from '../offer.service';
@@ -15,6 +15,7 @@ import { Project } from '../../projects/project.model';
 })
 export class CreateOfferComponent {
   @Input() project: Project | null = null;
+  @Output() offerCreated = new EventEmitter<void>();
 
   private offerService = inject(OfferService);
   private keycloakService = inject(KeycloakService);
@@ -50,6 +51,7 @@ export class CreateOfferComponent {
         this.loading = false;
         this.success = 'Offer submitted successfully';
         this.showForm = false;
+        this.offerCreated.emit();
         this.formData = {
           freelancerId: '',
           amount: 0,

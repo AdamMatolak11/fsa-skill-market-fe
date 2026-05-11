@@ -18,6 +18,7 @@
         <app-project-detail
           [project]="selectedProject()"
           (backClicked)="goBackToList()"
+          (projectUpdated)="loadProjects()"
         ></app-project-detail>
       </div>
 

@@ -42,13 +42,17 @@
                 <button
                   class="btn btn-sm btn-success"
                   (click)="acceptOffer(offer)"
+                  [disabled]="loading"
                 >
+                  @if (loading) { <span class="spinner-border spinner-border-sm me-1"></span> }
                   Accept
                 </button>
                 <button
                   class="btn btn-sm btn-danger"
                   (click)="rejectOffer(offer)"
+                  [disabled]="loading"
                 >
+                  @if (loading) { <span class="spinner-border spinner-border-sm me-1"></span> }
                   Reject
                 </button>
               </div>
@@ -59,7 +63,9 @@
                 <button
                   class="btn btn-sm btn-outline-danger"
                   (click)="cancelOffer(offer)"
+                  [disabled]="loading"
                 >
+                  @if (loading) { <span class="spinner-border spinner-border-sm me-1"></span> }
                   Cancel Offer
                 </button>
               </div>
