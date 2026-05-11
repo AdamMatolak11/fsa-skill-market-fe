@@ -1,6 +1,6 @@
 stages:
   - build
-  # - deploy
+  - deploy
 
 variables:
   IMAGE_NAME: "fsa-frontend"
