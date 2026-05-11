@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FreelancerService } from '../freelancer.service';
@@ -7,6 +7,7 @@ import { Freelancer } from '../freelancer.model';
 @Component({
   selector: 'app-freelancer-search',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './freelancer-search.component.html',
   styleUrl: './freelancer-search.component.scss'
