@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterModule } from '@angular/router';
 import { FreelancerService } from '../freelancer.service';
 import { Freelancer } from '../freelancer.model';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-freelancer-search',
@@ -16,29 +17,29 @@ import { Freelancer } from '../freelancer.model';
 export class FreelancerSearchComponent implements OnInit {
   private freelancerService = inject(FreelancerService);
 
-  freelancers: Freelancer[] = [];
-  loading = false;
-  error: string | null = null;
-  searchSkill = '';
+  freelancers = signal<Freelancer[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  searchSkill = signal('');
 
   ngOnInit(): void {
     this.loadFreelancers();
   }
 
   loadFreelancers(): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
-    this.freelancerService.searchFreelancers(this.searchSkill || undefined).subscribe({
-      next: (data) => {
-        this.freelancers = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = err.error?.message || 'Failed to load freelancers';
-        this.loading = false;
-      }
-    });
+    this.freelancerService.searchFreelancers(this.searchSkill() || undefined)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (data) => {
+          this.freelancers.set(data);
+        },
+        error: (err) => {
+          this.error.set(err.error?.message || 'Failed to load freelancers');
+        }
+      });
   }
 
   onSearch(): void {

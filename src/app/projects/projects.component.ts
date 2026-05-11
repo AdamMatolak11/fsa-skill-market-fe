@@ -6,6 +6,7 @@ import { Project } from './project.model';
 import { KeycloakService } from '../keycloak.service';
 import { CreateProjectModalComponent } from './create-project-modal/create-project-modal.component';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-projects',
@@ -107,17 +108,17 @@ export class ProjectsComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.projectService.getProjects().subscribe({
-      next: (projects) => {
-        this.projects.set(projects);
-        this.loading.set(false);
-      },
-      error: (error) => {
-        console.error('Error loading projects:', error);
-        this.error.set('Failed to load projects. Please try again later.');
-        this.loading.set(false);
-      }
-    });
+    this.projectService.getProjects()
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (projects) => {
+          this.projects.set(projects);
+        },
+        error: (error) => {
+          console.error('Error loading projects:', error);
+          this.error.set('Failed to load projects. Please try again later.');
+        }
+      });
   }
 
   clearFilters(): void {

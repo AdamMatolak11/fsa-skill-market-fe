@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Project } from '../project.model';
@@ -7,6 +7,7 @@ import { CreateOfferComponent } from '../../offers/create-offer/create-offer.com
 import { RatingComponent } from '../../ratings/rating/rating.component';
 import { KeycloakService } from '../../keycloak.service';
 import { ProjectService } from '../project.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-project-detail',
@@ -23,31 +24,32 @@ export class ProjectDetailComponent {
   private keycloakService = inject(KeycloakService);
   private projectService = inject(ProjectService);
 
-  editMode = false;
-  loading = false;
-  error: string | null = null;
+  editMode = signal(false);
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   editData = { title: '', description: '', budget: 0 };
 
   loadProject(): void {
     if (!this.project) return;
-    this.loading = true;
-    this.projectService.getProject(this.project.id).subscribe({
-      next: (project) => {
-        this.project = project;
-        this.projectUpdated.emit(project);
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        this.error = err.error?.message || 'Failed to refresh project';
-      }
-    });
+    this.loading.set(true);
+    this.projectService.getProject(this.project.id)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (project) => {
+          this.project = project;
+          this.projectUpdated.emit(project);
+        },
+        error: (err) => {
+          this.error.set(err.error?.message || 'Failed to refresh project');
+        }
+      });
   }
 
   goBack(): void {
     this.backClicked.emit();
   }
+// ... rest of the component
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -93,28 +95,28 @@ export class ProjectDetailComponent {
         budget: this.project.budget
       };
     }
-    this.editMode = !this.editMode;
-    this.error = null;
+    this.editMode.set(!this.editMode());
+    this.error.set(null);
   }
 
   saveProject(): void {
     if (!this.project) return;
 
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
-    this.projectService.updateProject(this.project.id, this.editData).subscribe({
-      next: (updatedProject) => {
-        this.loading = false;
-        this.project = updatedProject;
-        this.projectUpdated.emit(updatedProject);
-        this.editMode = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        this.error = err.error?.message || 'Failed to update project';
-      }
-    });
+    this.projectService.updateProject(this.project.id, this.editData)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (updatedProject) => {
+          this.project = updatedProject;
+          this.projectUpdated.emit(updatedProject);
+          this.editMode.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.error?.message || 'Failed to update project');
+        }
+      });
   }
 
   cancelProject(): void {
@@ -122,18 +124,18 @@ export class ProjectDetailComponent {
 
     if (!confirm('Are you sure you want to cancel this project?')) return;
 
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
-    this.projectService.cancelProject(this.project.id).subscribe({
-      next: () => {
-        this.loading = false;
-        this.goBack();
-      },
-      error: (err) => {
-        this.loading = false;
-        this.error = err.error?.message || 'Failed to cancel project';
-      }
-    });
+    this.projectService.cancelProject(this.project.id)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: () => {
+          this.goBack();
+        },
+        error: (err) => {
+          this.error.set(err.error?.message || 'Failed to cancel project');
+        }
+      });
   }
 }

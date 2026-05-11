@@ -1,10 +1,11 @@
-import { Component, Input, inject, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, inject, OnInit, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OfferService } from '../offer.service';
 import { KeycloakService } from '../../keycloak.service';
 import { Offer } from '../offer.model';
 import { Project } from '../../projects/project.model';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-offers',
@@ -20,9 +21,9 @@ export class OffersComponent implements OnInit {
   private offerService = inject(OfferService);
   private keycloakService = inject(KeycloakService);
 
-  offers: Offer[] = [];
-  loading = false;
-  error: string | null = null;
+  offers = signal<Offer[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   ngOnInit(): void {
     if (this.project) {
@@ -33,19 +34,19 @@ export class OffersComponent implements OnInit {
   loadOffers(): void {
     if (!this.project) return;
 
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
-    this.offerService.getProjectOffers(this.project.id).subscribe({
-      next: (data) => {
-        this.offers = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = err.error?.message || 'Failed to load offers';
-        this.loading = false;
-      }
-    });
+    this.offerService.getProjectOffers(this.project.id)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (data) => {
+          this.offers.set(data);
+        },
+        error: (err) => {
+          this.error.set(err.error?.message || 'Failed to load offers');
+        }
+      });
   }
 
   acceptOffer(offer: Offer): void {
@@ -53,18 +54,18 @@ export class OffersComponent implements OnInit {
 
     if (!confirm('Are you sure you want to accept this offer?')) return;
 
-    this.loading = true;
-    this.offerService.acceptOffer(this.project.id, offer.id).subscribe({
-      next: () => {
-        this.loading = false;
-        this.offerAccepted.emit();
-        this.loadOffers();
-      },
-      error: (err) => {
-        this.loading = false;
-        alert(err.error?.message || 'Failed to accept offer');
-      }
-    });
+    this.loading.set(true);
+    this.offerService.acceptOffer(this.project.id, offer.id)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: () => {
+          this.offerAccepted.emit();
+          this.loadOffers();
+        },
+        error: (err) => {
+          alert(err.error?.message || 'Failed to accept offer');
+        }
+      });
   }
 
   rejectOffer(offer: Offer): void {
@@ -72,17 +73,17 @@ export class OffersComponent implements OnInit {
 
     if (!confirm('Are you sure you want to reject this offer?')) return;
 
-    this.loading = true;
-    this.offerService.rejectOffer(this.project.id, offer.id).subscribe({
-      next: () => {
-        this.loading = false;
-        this.loadOffers();
-      },
-      error: (err) => {
-        this.loading = false;
-        alert(err.error?.message || 'Failed to reject offer');
-      }
-    });
+    this.loading.set(true);
+    this.offerService.rejectOffer(this.project.id, offer.id)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: () => {
+          this.loadOffers();
+        },
+        error: (err) => {
+          alert(err.error?.message || 'Failed to reject offer');
+        }
+      });
   }
 
   cancelOffer(offer: Offer): void {
@@ -90,17 +91,17 @@ export class OffersComponent implements OnInit {
 
     if (!confirm('Are you sure you want to cancel this offer?')) return;
 
-    this.loading = true;
-    this.offerService.cancelOffer(this.project.id, offer.id).subscribe({
-      next: () => {
-        this.loading = false;
-        this.loadOffers();
-      },
-      error: (err) => {
-        this.loading = false;
-        alert(err.error?.message || 'Failed to cancel offer');
-      }
-    });
+    this.loading.set(true);
+    this.offerService.cancelOffer(this.project.id, offer.id)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: () => {
+          this.loadOffers();
+        },
+        error: (err) => {
+          alert(err.error?.message || 'Failed to cancel offer');
+        }
+      });
   }
 
   getStatusBadgeClass(status: string): string {

@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ProfileService } from '../profile.service';
 import { KeycloakService } from '../../keycloak.service';
 import { UserProfile, UpdateProfileRequest } from '../profile.model';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -18,12 +19,12 @@ export class ProfileComponent implements OnInit {
   private keycloakService = inject(KeycloakService);
   private route = inject(ActivatedRoute);
 
-  profile: UserProfile | null = null;
-  loading = false;
-  error: string | null = null;
-  success: string | null = null;
-  editMode = false;
-  isOwnProfile = true;
+  profile = signal<UserProfile | null>(null);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  success = signal<string | null>(null);
+  editMode = signal(false);
+  isOwnProfile = signal(true);
 
   formData: UpdateProfileRequest = {
     displayName: '',
@@ -31,59 +32,59 @@ export class ProfileComponent implements OnInit {
     skills: []
   };
 
-  skillInput = '';
+  skillInput = signal('');
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const userId = params['userId'];
       if (userId) {
-        this.isOwnProfile = userId === this.keycloakService.getUserId();
+        this.isOwnProfile.set(userId === this.keycloakService.getUserId());
         this.loadProfile(userId);
       } else {
-        this.isOwnProfile = true;
+        this.isOwnProfile.set(true);
         this.loadProfile();
       }
     });
   }
 
   loadProfile(userId?: string): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
     const targetUserId = userId || this.keycloakService.getUserId();
     if (!targetUserId) {
-      this.error = 'User ID not found';
-      this.loading = false;
+      this.error.set('User ID not found');
+      this.loading.set(false);
       return;
     }
 
-    this.profileService.getProfile(targetUserId).subscribe({
-      next: (data) => {
-        this.profile = data;
-        this.formData = {
-          displayName: data.displayName,
-          bio: data.bio,
-          skills: [...data.skills]
-        };
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = err.error?.message || 'Failed to load profile';
-        this.loading = false;
-      }
-    });
+    this.profileService.getProfile(targetUserId)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (data) => {
+          this.profile.set(data);
+          this.formData = {
+            displayName: data.displayName,
+            bio: data.bio,
+            skills: [...data.skills]
+          };
+        },
+        error: (err) => {
+          this.error.set(err.error?.message || 'Failed to load profile');
+        }
+      });
   }
 
   toggleEditMode(): void {
-    this.editMode = !this.editMode;
-    this.error = null;
-    this.success = null;
+    this.editMode.set(!this.editMode());
+    this.error.set(null);
+    this.success.set(null);
   }
 
   addSkill(): void {
-    if (this.skillInput.trim() && !this.formData.skills.includes(this.skillInput.trim())) {
-      this.formData.skills.push(this.skillInput.trim());
-      this.skillInput = '';
+    if (this.skillInput().trim() && !this.formData.skills.includes(this.skillInput().trim())) {
+      this.formData.skills.push(this.skillInput().trim());
+      this.skillInput.set('');
     }
   }
 
@@ -92,25 +93,26 @@ export class ProfileComponent implements OnInit {
   }
 
   saveProfile(): void {
-    if (!this.profile) return;
+    const currentProfile = this.profile();
+    if (!currentProfile) return;
 
-    this.loading = true;
-    this.error = null;
-    this.success = null;
+    this.loading.set(true);
+    this.error.set(null);
+    this.success.set(null);
 
-    this.profileService.updateProfile(this.profile.id, this.formData).subscribe({
-      next: (data) => {
-        this.profile = data;
-        this.loading = false;
-        this.success = 'Profile updated successfully';
-        this.editMode = false;
-        setTimeout(() => (this.success = null), 3000);
-      },
-      error: (err) => {
-        this.loading = false;
-        this.error = err.error?.message || 'Failed to update profile';
-      }
-    });
+    this.profileService.updateProfile(currentProfile.id, this.formData)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (data) => {
+          this.profile.set(data);
+          this.success.set('Profile updated successfully');
+          this.editMode.set(false);
+          setTimeout(() => (this.success.set(null)), 3000);
+        },
+        error: (err) => {
+          this.error.set(err.error?.message || 'Failed to update profile');
+        }
+      });
   }
 
   getRatingColor(rating: number): string {

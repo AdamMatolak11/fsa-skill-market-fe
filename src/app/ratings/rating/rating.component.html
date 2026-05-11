@@ -1,12 +1,12 @@
 <div class="rating-section">
-  @if (success) {
+  @if (success()) {
     <div class="alert alert-success alert-dismissible fade show">
-      {{ success }}
-      <button type="button" class="btn-close" (click)="success = null"></button>
+      {{ success() }}
+      <button type="button" class="btn-close" (click)="success.set(null)"></button>
     </div>
   }
 
-  @if (!showForm) {
+  @if (!showForm()) {
     @if (canRate()) {
       <button class="btn btn-primary" (click)="openRatingForm()">
         Rate Freelancer
@@ -18,8 +18,8 @@
         <h5 class="mb-0">Rate Freelancer</h5>
       </div>
       <div class="card-body">
-        @if (error) {
-          <div class="alert alert-danger">{{ error }}</div>
+        @if (error()) {
+          <div class="alert alert-danger">{{ error() }}</div>
         }
 
         <div class="mb-3">
@@ -56,7 +56,7 @@
             type="button"
             class="btn btn-secondary"
             (click)="closeForm()"
-            [disabled]="loading"
+            [disabled]="loading()"
           >
             Cancel
           </button>
@@ -64,9 +64,9 @@
             type="button"
             class="btn btn-primary"
             (click)="submitRating()"
-            [disabled]="loading || !formData.comment.trim()"
+            [disabled]="loading() || !formData.comment.trim()"
           >
-            @if (loading) {
+            @if (loading()) {
               <span class="spinner-border spinner-border-sm me-2"></span>
             }
             Submit Rating

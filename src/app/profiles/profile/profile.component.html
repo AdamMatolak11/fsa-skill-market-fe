@@ -1,5 +1,5 @@
 <div class="container mt-4">
-  @if (loading) {
+  @if (loading()) {
     <div class="text-center my-4">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -7,30 +7,30 @@
     </div>
   }
 
-  @if (error) {
-    <div class="alert alert-danger">{{ error }}</div>
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
   }
 
-  @if (success) {
+  @if (success()) {
     <div class="alert alert-success alert-dismissible fade show">
-      {{ success }}
-      <button type="button" class="btn-close" (click)="success = null"></button>
+      {{ success() }}
+      <button type="button" class="btn-close" (click)="success.set(null)"></button>
     </div>
   }
 
-  @if (profile) {
+  @if (profile()) {
     <div class="row">
       <div class="col-lg-8 mx-auto">
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="mb-0">{{ isOwnProfile ? 'My Profile' : (profile.displayName + "'s Profile") }}</h3>
+            <h3 class="mb-0">{{ isOwnProfile() ? 'My Profile' : (profile()!.displayName + "'s Profile") }}</h3>
             <button
-              *ngIf="isOwnProfile"
+              *ngIf="isOwnProfile()"
               class="btn btn-outline-primary btn-sm"
               (click)="toggleEditMode()"
-              [disabled]="loading"
+              [disabled]="loading()"
             >
-              @if (!editMode) {
+              @if (!editMode()) {
                 Edit Profile
               } @else {
                 Cancel
@@ -39,42 +39,42 @@
           </div>
 
           <div class="card-body">
-            @if (!editMode) {
+            @if (!editMode()) {
               <!-- View Mode -->
               <div class="row mb-4">
                 <div class="col-md-6">
                   <p><strong>Display Name:</strong></p>
-                  <p>{{ profile.displayName }}</p>
+                  <p>{{ profile()!.displayName }}</p>
                 </div>
                 <div class="col-md-6">
                   <p><strong>Email:</strong></p>
-                  <p>{{ profile.email }}</p>
+                  <p>{{ profile()!.email }}</p>
                 </div>
               </div>
 
               <div class="row mb-4">
                 <div class="col-md-6">
                   <p><strong>Role:</strong></p>
-                  <span class="badge bg-primary">{{ profile.role }}</span>
+                  <span class="badge bg-primary">{{ profile()!.role }}</span>
                 </div>
                 <div class="col-md-6">
                   <p><strong>Rating:</strong></p>
-                  <span [ngClass]="'badge bg-' + getRatingColor(profile.averageRating)">
-                    ⭐ {{ profile.averageRating | number: '1.1-1' }} ({{ profile.ratingCount }} ratings)
+                  <span [ngClass]="'badge bg-' + getRatingColor(profile()!.averageRating)">
+                    ⭐ {{ profile()!.averageRating | number: '1.1-1' }} ({{ profile()!.ratingCount }} ratings)
                   </span>
                 </div>
               </div>
 
               <div class="mb-4">
                 <p><strong>Bio:</strong></p>
-                <p>{{ profile.bio || 'No bio added' }}</p>
+                <p>{{ profile()!.bio || 'No bio added' }}</p>
               </div>
 
-              @if (profile.skills.length > 0) {
+              @if (profile()!.skills.length > 0) {
                 <div class="mb-4">
                   <p><strong>Skills:</strong></p>
                   <div>
-                    @for (skill of profile.skills; track skill) {
+                    @for (skill of profile()!.skills; track skill) {
                       <span class="badge bg-secondary me-2">{{ skill }}</span>
                     }
                   </div>
@@ -109,7 +109,8 @@
                     <input
                       type="text"
                       class="form-control"
-                      [(ngModel)]="skillInput"
+                      [ngModel]="skillInput()"
+                      (ngModelChange)="skillInput.set($event)"
                       name="skillInput"
                       placeholder="Add a skill..."
                       (keyup.enter)="addSkill()"
@@ -145,7 +146,7 @@
                     type="button"
                     class="btn btn-secondary"
                     (click)="toggleEditMode()"
-                    [disabled]="loading"
+                    [disabled]="loading()"
                   >
                     Cancel
                   </button>
@@ -153,9 +154,9 @@
                     type="button"
                     class="btn btn-primary"
                     (click)="saveProfile()"
-                    [disabled]="loading"
+                    [disabled]="loading()"
                   >
-                    @if (loading) {
+                    @if (loading()) {
                       <span class="spinner-border spinner-border-sm me-2"></span>
                     }
                     Save Changes

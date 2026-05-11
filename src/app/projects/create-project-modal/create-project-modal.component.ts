@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectService } from '../project.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-create-project-modal',
@@ -49,18 +50,18 @@ export class CreateProjectModalComponent {
       budget: this.budget()!
     };
 
-    this.projectService.createProject(projectData).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.close();
-        this.projectCreated.emit();
-      },
-      error: (error) => {
-        console.error('Error creating project:', error);
-        this.error.set(error.error?.message || 'Failed to create project. Please try again.');
-        this.isSubmitting.set(false);
-      }
-    });
+    this.projectService.createProject(projectData)
+      .pipe(finalize(() => this.isSubmitting.set(false)))
+      .subscribe({
+        next: () => {
+          this.close();
+          this.projectCreated.emit();
+        },
+        error: (error) => {
+          console.error('Error creating project:', error);
+          this.error.set(error.error?.message || 'Failed to create project. Please try again.');
+        }
+      });
   }
 
   private validateForm(): boolean {

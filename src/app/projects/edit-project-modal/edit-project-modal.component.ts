@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectService } from '../project.service';
 import { Project, UpdateProjectRequest } from '../project.model';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-edit-project-modal',
@@ -85,17 +86,17 @@ export class EditProjectModalComponent {
 
     const request: UpdateProjectRequest = this.formData();
 
-    this.projectService.updateProject(this.projectId, request).subscribe({
-      next: (project) => {
-        this.loading.set(false);
-        const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('editProjectModal'));
-        modal?.hide();
-        if (this.onSave) this.onSave(project);
-      },
-      error: (err) => {
-        this.loading.set(false);
-        this.error.set(err.error?.message || 'Failed to update project');
-      }
-    });
+    this.projectService.updateProject(this.projectId, request)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (project) => {
+          const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('editProjectModal'));
+          modal?.hide();
+          if (this.onSave) this.onSave(project);
+        },
+        error: (err) => {
+          this.error.set(err.error?.message || 'Failed to update project');
+        }
+      });
   }
 }

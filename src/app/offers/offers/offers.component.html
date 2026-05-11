@@ -1,7 +1,7 @@
 <div class="offers-section">
   <h4 class="mb-3">Project Offers</h4>
 
-  @if (loading) {
+  @if (loading()) {
     <div class="text-center">
       <div class="spinner-border spinner-border-sm" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -9,16 +9,16 @@
     </div>
   }
 
-  @if (error) {
-    <div class="alert alert-danger">{{ error }}</div>
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
   }
 
-  @if (offers.length === 0 && !loading) {
+  @if (offers().length === 0 && !loading()) {
     <div class="alert alert-info">No offers yet</div>
   }
 
   <div class="row">
-    @for (offer of offers; track offer.id) {
+    @for (offer of offers(); track offer.id) {
       <div class="col-12 mb-3">
         <div class="card">
           <div class="card-body">
@@ -42,17 +42,17 @@
                 <button
                   class="btn btn-sm btn-success"
                   (click)="acceptOffer(offer)"
-                  [disabled]="loading"
+                  [disabled]="loading()"
                 >
-                  @if (loading) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                  @if (loading()) { <span class="spinner-border spinner-border-sm me-1"></span> }
                   Accept
                 </button>
                 <button
                   class="btn btn-sm btn-danger"
                   (click)="rejectOffer(offer)"
-                  [disabled]="loading"
+                  [disabled]="loading()"
                 >
-                  @if (loading) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                  @if (loading()) { <span class="spinner-border spinner-border-sm me-1"></span> }
                   Reject
                 </button>
               </div>
@@ -63,9 +63,9 @@
                 <button
                   class="btn btn-sm btn-outline-danger"
                   (click)="cancelOffer(offer)"
-                  [disabled]="loading"
+                  [disabled]="loading()"
                 >
-                  @if (loading) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                  @if (loading()) { <span class="spinner-border spinner-border-sm me-1"></span> }
                   Cancel Offer
                 </button>
               </div>
