@@ -1,4 +1,4 @@
-import { Component, Input, inject, OnInit, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Input, inject, OnInit, Output, EventEmitter, signal, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OfferService } from '../offer.service';
@@ -14,7 +14,7 @@ import { finalize } from 'rxjs';
   templateUrl: './offers.component.html',
   styleUrl: './offers.component.scss'
 })
-export class OffersComponent implements OnInit {
+export class OffersComponent implements OnInit, OnChanges {
   @Input() project: Project | null = null;
   @Output() offerAccepted = new EventEmitter<void>();
 
@@ -26,6 +26,13 @@ export class OffersComponent implements OnInit {
   error = signal<string | null>(null);
 
   ngOnInit(): void {
+    if (this.project) {
+      this.loadOffers();
+    }
+  }
+
+  ngOnChanges(): void {
+    // Reload offers whenever project input changes
     if (this.project) {
       this.loadOffers();
     }

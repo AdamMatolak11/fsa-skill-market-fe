@@ -11,6 +11,10 @@
       <button class="btn btn-primary" (click)="openOfferForm()">
         Submit Your Offer
       </button>
+    } @else if (hasExistingOffer()) {
+      <div class="alert alert-info">
+        You have already submitted an offer for this project. You can only submit one offer per project.
+      </div>
     }
   } @else {
     <div class="card mt-3">

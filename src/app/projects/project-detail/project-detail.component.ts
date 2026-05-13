@@ -36,11 +36,15 @@ export class ProjectDetailComponent implements OnInit {
   );
 
   canEdit = computed(() =>
-    this.isProjectOwner() && ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
+    this.isProjectOwner() && 
+    this.keycloakService.hasRole('CLIENT') && 
+    ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
   );
 
   canCancel = computed(() =>
-    this.isProjectOwner() && ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
+    this.isProjectOwner() && 
+    this.keycloakService.hasRole('CLIENT') && 
+    ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
   );
 
   ngOnInit(): void {

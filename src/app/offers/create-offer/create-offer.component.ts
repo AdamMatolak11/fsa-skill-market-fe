@@ -1,9 +1,9 @@
-import { Component, Input, inject, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Input, inject, Output, EventEmitter, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OfferService } from '../offer.service';
 import { KeycloakService } from '../../keycloak.service';
-import { CreateOfferRequest } from '../offer.model';
+import { CreateOfferRequest, Offer } from '../offer.model';
 import { Project } from '../../projects/project.model';
 import { finalize } from 'rxjs';
 
@@ -16,6 +16,7 @@ import { finalize } from 'rxjs';
 })
 export class CreateOfferComponent {
   @Input() project: Project | null = null;
+  @Input() existingOffers: Offer[] = [];
   @Output() offerCreated = new EventEmitter<void>();
 
   private offerService = inject(OfferService);
@@ -25,6 +26,12 @@ export class CreateOfferComponent {
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
+
+  // Check if freelancer already has an offer for this project
+  hasExistingOffer = computed(() => {
+    const userId = this.keycloakService.getUserId();
+    return this.existingOffers.some(offer => offer.freelancerId === userId);
+  });
 
   formData: CreateOfferRequest = {
     freelancerId: '',
@@ -75,7 +82,8 @@ export class CreateOfferComponent {
   canSubmitOffer(): boolean {
     return (
       this.keycloakService.hasRole('FREELANCER') &&
-      this.project?.status === 'OPEN'
+      this.project?.status === 'OPEN' &&
+      !this.hasExistingOffer()
     );
   }
 }
