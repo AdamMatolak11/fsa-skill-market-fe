@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Project } from '../project.model';
@@ -16,7 +16,7 @@ import { finalize } from 'rxjs';
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss'
 })
-export class ProjectDetailComponent {
+export class ProjectDetailComponent implements OnInit {
   @Input() project: Project | null = null;
   @Output() backClicked = new EventEmitter<void>();
   @Output() projectUpdated = new EventEmitter<Project>();
@@ -29,6 +29,25 @@ export class ProjectDetailComponent {
   error = signal<string | null>(null);
 
   editData = { title: '', description: '', budget: 0 };
+
+  // Computed properties for access control
+  isProjectOwner = computed(() => 
+    this.project?.clientId === this.keycloakService.getUserId()
+  );
+
+  canEdit = computed(() =>
+    this.isProjectOwner() && ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
+  );
+
+  canCancel = computed(() =>
+    this.isProjectOwner() && ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
+  );
+
+  ngOnInit(): void {
+    // Ensure edit mode is always false when component initializes
+    this.editMode.set(false);
+    this.error.set(null);
+  }
 
   loadProject(): void {
     if (!this.project) return;
@@ -69,22 +88,6 @@ export class ProjectDetailComponent {
       default:
         return 'bg-light text-dark';
     }
-  }
-
-  isClient(): boolean {
-    return this.keycloakService.hasRole('CLIENT');
-  }
-
-  isProjectOwner(): boolean {
-    return this.project?.clientId === this.keycloakService.getUserId();
-  }
-
-  canEdit(): boolean {
-    return this.isProjectOwner() && ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '');
-  }
-
-  canCancel(): boolean {
-    return this.isProjectOwner() && ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '');
   }
 
   toggleEditMode(): void {
