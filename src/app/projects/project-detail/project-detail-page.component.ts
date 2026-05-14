@@ -13,8 +13,8 @@ import { ProjectDetailComponent } from './project-detail.component';
   template: `
     <app-project-detail
       [project]="project()"
-      [loading]="loading"
-      [error]="error"
+      [loading]="loading()"
+      [error]="error()"
       (backClicked)="goBack()"
       (projectUpdated)="refreshProject()">
     </app-project-detail>
@@ -30,10 +30,12 @@ export class ProjectDetailPageComponent implements OnInit {
   error = signal<string | null>(null);
 
   ngOnInit(): void {
-    const projectId = this.route.snapshot.paramMap.get('projectId');
-    if (projectId) {
-      this.loadProject(projectId);
-    }
+    this.route.paramMap.subscribe(params => {
+      const projectId = params.get('projectId');
+      if (projectId) {
+        this.loadProject(projectId);
+      }
+    });
   }
 
   loadProject(projectId: string): void {

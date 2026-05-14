@@ -18,8 +18,8 @@ import { finalize } from 'rxjs';
 })
 export class ProjectDetailComponent implements OnInit {
   project = signal<Project | null>(null);
-  @Input() loading = signal(false);
-  @Input() error = signal<string | null>(null);
+  @Input() loading = false;
+  @Input() error: string | null = null;
 
   @Input('project') set projectInput(value: Project | null) {
     this.project.set(value);
@@ -54,15 +54,13 @@ export class ProjectDetailComponent implements OnInit {
   ngOnInit(): void {
     // Ensure edit mode is always false when component initializes
     this.editMode.set(false);
-    this.error.set(null);
+    this.error = null;
   }
 
   loadProject(): void {
     const currentProject = this.project();
     if (!currentProject) return;
-    this.loading.set(true);
     this.projectService.getProjectDetail(currentProject.id)
-      .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (project) => {
           this.project.set(project);
@@ -71,7 +69,7 @@ export class ProjectDetailComponent implements OnInit {
         error: (err) => {
           // Suppress 405 error from offer creation refresh
           if (err.status !== 405) {
-            this.error.set(err.error?.message || 'Failed to refresh project');
+            this.error = err.error?.message || 'Failed to refresh project';
           }
         }
       });
@@ -115,18 +113,16 @@ export class ProjectDetailComponent implements OnInit {
       };
     }
     this.editMode.set(!this.editMode());
-    this.error.set(null);
+    this.error = null;
   }
 
   saveProject(): void {
     const currentProject = this.project();
     if (!currentProject) return;
 
-    this.loading.set(true);
-    this.error.set(null);
+    this.error = null;
 
     this.projectService.updateProject(currentProject.id, this.editData)
-      .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (updatedProject) => {
           this.project.set(updatedProject);
@@ -134,7 +130,7 @@ export class ProjectDetailComponent implements OnInit {
           this.editMode.set(false);
         },
         error: (err) => {
-          this.error.set(err.error?.message || 'Failed to update project');
+          this.error = err.error?.message || 'Failed to update project';
         }
       });
   }
@@ -145,18 +141,16 @@ export class ProjectDetailComponent implements OnInit {
 
     if (!confirm('Are you sure you want to cancel this project?')) return;
 
-    this.loading.set(true);
-    this.error.set(null);
+    this.error = null;
 
     this.projectService.cancelProject(currentProject.id)
-      .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () => {
           this.projectUpdated.emit({ ...currentProject, status: 'CANCELLED' } as Project);
           this.goBack();
         },
         error: (err) => {
-          this.error.set(err.error?.message || 'Failed to cancel project');
+          this.error = err.error?.message || 'Failed to cancel project';
         }
       });
   }
