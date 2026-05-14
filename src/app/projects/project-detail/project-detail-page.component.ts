@@ -31,19 +31,19 @@ export class ProjectDetailPageComponent implements OnInit {
   editData = { title: '', description: '', budget: 0 };
 
   // Computed properties for access control
-  isProjectOwner = computed(() => 
+  isProjectOwner = computed(() =>
     this.project()?.clientId === this.keycloakService.getUserId()
   );
 
   canEdit = computed(() =>
-    this.isProjectOwner() && 
-    this.keycloakService.hasRole('CLIENT') && 
+    this.isProjectOwner() &&
+    this.keycloakService.hasRole('CLIENT') &&
     ['OPEN', 'IN_PROGRESS'].includes(this.project()?.status || '')
   );
 
   canCancel = computed(() =>
-    this.isProjectOwner() && 
-    this.keycloakService.hasRole('CLIENT') && 
+    this.isProjectOwner() &&
+    this.keycloakService.hasRole('CLIENT') &&
     ['OPEN', 'IN_PROGRESS'].includes(this.project()?.status || '')
   );
 

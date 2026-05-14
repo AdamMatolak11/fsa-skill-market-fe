@@ -60,7 +60,7 @@ export class ProjectDetailComponent implements OnInit {
     const currentProject = this.project();
     if (!currentProject) return;
     this.loading.set(true);
-    this.projectService.getProject(currentProject.id)
+    this.projectService.getProjectDetail(currentProject.id)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (project) => {
