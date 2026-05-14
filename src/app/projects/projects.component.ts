@@ -159,23 +159,3 @@ export class ProjectsComponent implements OnInit {
     return project.id;
   }
 }
-      case 'in_progress':
-        return 'bg-primary';
-      case 'completed':
-        return 'bg-secondary';
-      case 'cancelled':
-        return 'bg-danger';
-      default:
-        return 'bg-light text-dark';
-    }
-  }
-
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  trackByProjectId(index: number, project: Project): string {
-    return project.id;
-  }
-}

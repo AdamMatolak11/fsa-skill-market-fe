@@ -17,7 +17,10 @@ import { finalize } from 'rxjs';
   styleUrl: './project-detail.component.scss'
 })
 export class ProjectDetailComponent implements OnInit {
-  @Input() project: Project | null = null;
+  project = signal<Project | null>(null);
+  @Input('project') set projectInput(value: Project | null) {
+    this.project.set(value);
+  }
   @Output() backClicked = new EventEmitter<void>();
   @Output() projectUpdated = new EventEmitter<Project>();
 
@@ -31,20 +34,20 @@ export class ProjectDetailComponent implements OnInit {
   editData = { title: '', description: '', budget: 0 };
 
   // Computed properties for access control
-  isProjectOwner = computed(() => 
-    this.project?.clientId === this.keycloakService.getUserId()
+  isProjectOwner = computed(() =>
+    this.project()?.clientId === this.keycloakService.getUserId()
   );
 
   canEdit = computed(() =>
-    this.isProjectOwner() && 
-    this.keycloakService.hasRole('CLIENT') && 
-    ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
+    this.isProjectOwner() &&
+    this.keycloakService.hasRole('CLIENT') &&
+    ['OPEN', 'IN_PROGRESS'].includes(this.project()?.status || '')
   );
 
   canCancel = computed(() =>
-    this.isProjectOwner() && 
-    this.keycloakService.hasRole('CLIENT') && 
-    ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
+    this.isProjectOwner() &&
+    this.keycloakService.hasRole('CLIENT') &&
+    ['OPEN', 'IN_PROGRESS'].includes(this.project()?.status || '')
   );
 
   ngOnInit(): void {
@@ -54,13 +57,14 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   loadProject(): void {
-    if (!this.project) return;
+    const currentProject = this.project();
+    if (!currentProject) return;
     this.loading.set(true);
-    this.projectService.getProject(this.project.id)
+    this.projectService.getProject(currentProject.id)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (project) => {
-          this.project = project;
+          this.project.set(project);
           this.projectUpdated.emit(project);
         },
         error: (err) => {
@@ -72,10 +76,13 @@ export class ProjectDetailComponent implements OnInit {
       });
   }
 
+  refreshProject(): void {
+    this.loadProject();
+  }
+
   goBack(): void {
     this.backClicked.emit();
   }
-// ... rest of the component
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -98,11 +105,12 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   toggleEditMode(): void {
-    if (this.project) {
+    const currentProject = this.project();
+    if (currentProject) {
       this.editData = {
-        title: this.project.title,
-        description: this.project.description,
-        budget: this.project.budget
+        title: currentProject.title,
+        description: currentProject.description,
+        budget: currentProject.budget
       };
     }
     this.editMode.set(!this.editMode());
@@ -110,16 +118,17 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   saveProject(): void {
-    if (!this.project) return;
+    const currentProject = this.project();
+    if (!currentProject) return;
 
     this.loading.set(true);
     this.error.set(null);
 
-    this.projectService.updateProject(this.project.id, this.editData)
+    this.projectService.updateProject(currentProject.id, this.editData)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (updatedProject) => {
-          this.project = updatedProject;
+          this.project.set(updatedProject);
           this.projectUpdated.emit(updatedProject);
           this.editMode.set(false);
         },
@@ -130,18 +139,19 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   cancelProject(): void {
-    if (!this.project) return;
+    const currentProject = this.project();
+    if (!currentProject) return;
 
     if (!confirm('Are you sure you want to cancel this project?')) return;
 
     this.loading.set(true);
     this.error.set(null);
 
-    this.projectService.cancelProject(this.project.id)
+    this.projectService.cancelProject(currentProject.id)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () => {
-          this.projectUpdated.emit({ ...this.project!, status: 'CANCELLED' } as Project);
+          this.projectUpdated.emit({ ...currentProject, status: 'CANCELLED' } as Project);
           this.goBack();
         },
         error: (err) => {
