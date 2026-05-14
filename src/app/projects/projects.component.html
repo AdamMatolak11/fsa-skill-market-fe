@@ -13,17 +13,8 @@
         <strong>Error:</strong> {{ error() }}
       </div>
 
-      <!-- Detail View -->
-      <div *ngIf="!loading() && !error() && viewMode() === 'detail'">
-        <app-project-detail
-          [project]="selectedProject()"
-          (backClicked)="goBackToList()"
-          (projectUpdated)="loadProjects()"
-        ></app-project-detail>
-      </div>
-
       <!-- List View -->
-      <div *ngIf="!loading() && !error() && viewMode() === 'list'">
+      <div *ngIf="!loading() && !error()">
         <!-- Filters Card -->
         <div class="card mb-3">
           <div class="card-header">
@@ -117,6 +108,7 @@
                         </span>
                       </button>
                     </th>
+                    <th>Offers</th>
                     <th>
                       <button class="btn btn-sm btn-link text-white p-0" (click)="setSortBy('status')">
                         Status
@@ -142,6 +134,9 @@
                     <td>{{ project.description }}</td>
                     <td class="text-success fw-bold">€{{ project.budget.toFixed(2) }}</td>
                     <td>
+                      <span class="badge bg-info">{{ project.offersCount || 0 }}</span>
+                    </td>
+                    <td>
                       <span class="badge"
                             [ngClass]="getStatusBadgeClass(project.status)">
                         {{ project.status }}
@@ -155,7 +150,7 @@
                     </td>
                   </tr>
                   <tr *ngIf="paginatedProjects().length === 0">
-                    <td colspan="6" class="text-center text-muted py-4">
+                    <td colspan="7" class="text-center text-muted py-4">
                       {{ filteredAndSortedProjects().length === 0 ? 'No projects found' : 'No projects on this page' }}
                     </td>
                   </tr>
@@ -189,7 +184,7 @@
 
   <!-- Floating Create Button (visible only for CLIENT role) -->
   <button
-    *ngIf="isClientRole() && !loading() && viewMode() === 'list'"
+    *ngIf="isClientRole() && !loading()"
     class="btn btn-primary floating-create-btn"
     (click)="openCreateModal()"
     title="Create new project"
@@ -202,4 +197,3 @@
 <app-create-project-modal
   (projectCreated)="onProjectCreated()"
 ></app-create-project-modal>
-

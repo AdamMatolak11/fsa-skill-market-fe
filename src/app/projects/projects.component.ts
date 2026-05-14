@@ -1,16 +1,16 @@
 import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ProjectService } from './project.service';
 import { Project } from './project.model';
 import { KeycloakService } from '../keycloak.service';
 import { CreateProjectModalComponent } from './create-project-modal/create-project-modal.component';
-import { ProjectDetailComponent } from './project-detail/project-detail.component';
 import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-projects',
-  imports: [CommonModule, FormsModule, CreateProjectModalComponent, ProjectDetailComponent],
+  imports: [CommonModule, FormsModule, CreateProjectModalComponent],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.scss'
 })
@@ -19,16 +19,13 @@ export class ProjectsComponent implements OnInit {
 
   private projectService = inject(ProjectService);
   private keycloakService = inject(KeycloakService);
+  private router = inject(Router);
 
   // Data
   projects = signal<Project[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
   isClientRole = computed(() => this.keycloakService.hasRole('CLIENT'));
-
-  // View mode
-  viewMode = signal<'list' | 'detail'>('list');
-  selectedProject = signal<Project | null>(null);
 
   // Filters
   filterTitle = signal('');
@@ -95,13 +92,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   viewProjectDetail(project: Project): void {
-    this.selectedProject.set(project);
-    this.viewMode.set('detail');
-  }
-
-  goBackToList(): void {
-    this.viewMode.set('list');
-    this.selectedProject.set(null);
+    this.router.navigate(['/projects', project.id]);
   }
 
   loadProjects(): void {
@@ -148,6 +139,26 @@ export class ProjectsComponent implements OnInit {
     switch (status.toLowerCase()) {
       case 'open':
         return 'bg-success';
+      case 'in_progress':
+        return 'bg-primary';
+      case 'completed':
+        return 'bg-secondary';
+      case 'cancelled':
+        return 'bg-danger';
+      default:
+        return 'bg-light text-dark';
+    }
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  trackByProjectId(index: number, project: Project): string {
+    return project.id;
+  }
+}
       case 'in_progress':
         return 'bg-primary';
       case 'completed':

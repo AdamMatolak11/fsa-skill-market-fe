@@ -1,4 +1,4 @@
-import { Component, Input, inject, OnInit, Output, EventEmitter, signal, OnChanges } from '@angular/core';
+import { Component, Input, inject, OnInit, Output, EventEmitter, signal, OnChanges, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OfferService } from '../offer.service';
@@ -24,6 +24,26 @@ export class OffersComponent implements OnInit, OnChanges {
   offers = signal<Offer[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
+
+  // Computed properties for visibility control
+  isProjectOwner = computed(() => 
+    this.project?.clientId === this.keycloakService.getUserId()
+  );
+
+  isFreelancer = computed(() => this.keycloakService.hasRole('FREELANCER'));
+
+  // Filter offers based on user role
+  visibleOffers = computed(() => {
+    if (this.isProjectOwner()) {
+      // Project owner can see all offers
+      return this.offers();
+    } else if (this.isFreelancer()) {
+      // Freelancer can only see their own offers
+      const userId = this.keycloakService.getUserId();
+      return this.offers().filter(offer => offer.freelancerId === userId);
+    }
+    return [];
+  });
 
   ngOnInit(): void {
     if (this.project) {
@@ -129,7 +149,7 @@ export class OffersComponent implements OnInit, OnChanges {
     return this.keycloakService.hasRole('CLIENT');
   }
 
-  isFreelancer(): boolean {
+  isFreelancerRole(): boolean {
     return this.keycloakService.hasRole('FREELANCER');
   }
 }

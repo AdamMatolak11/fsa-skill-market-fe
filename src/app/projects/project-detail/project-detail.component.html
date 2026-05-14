@@ -19,10 +19,10 @@
     </div>
   }
 
-  @if (project) {
+  @if (project()) {
     <div class="card">
       <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">{{ project.title }}</h2>
+        <h2 class="mb-0">{{ project()!.title }}</h2>
         @if (canEdit()) {
           <button
             class="btn btn-light btn-sm"
@@ -44,22 +44,22 @@
           <div class="row mb-4">
             <div class="col-md-8">
               <h5 class="text-muted">Description</h5>
-              <p class="lead">{{ project.description }}</p>
+              <p class="lead">{{ project()!.description }}</p>
             </div>
             <div class="col-md-4">
               <div class="mb-3">
                 <h5 class="text-muted">Budget</h5>
-                <p class="lead text-success fw-bold">€{{ project.budget | number: '1.2-2' }}</p>
+                <p class="lead text-success fw-bold">€{{ project()!.budget | number: '1.2-2' }}</p>
               </div>
               <div class="mb-3">
                 <h5 class="text-muted">Status</h5>
-                <span class="badge fs-6" [ngClass]="getStatusBadgeClass(project.status)">
-                  {{ project.status }}
+                <span class="badge fs-6" [ngClass]="getStatusBadgeClass(project()!.status)">
+                  {{ project()!.status }}
                 </span>
               </div>
               <div class="mb-3">
                 <h5 class="text-muted">Created</h5>
-                <p class="mb-0">{{ formatDate(project.createdAt) }}</p>
+                <p class="mb-0">{{ formatDate(project()!.createdAt) }}</p>
               </div>
             </div>
           </div>
@@ -140,17 +140,17 @@
 
     <!-- Submit Offer Section for Freelancers -->
     <div class="mt-4">
-      <app-create-offer [project]="project" (offerCreated)="loadProject()"></app-create-offer>
+      <app-create-offer [project]="project()!" (offerCreated)="refreshProject()"></app-create-offer>
     </div>
 
     <!-- Offers Section -->
     <div class="mt-4">
-      <app-offers [project]="project" (offerAccepted)="loadProject()"></app-offers>
+      <app-offers [project]="project()!" (offerAccepted)="refreshProject()"></app-offers>
     </div>
 
     <!-- Rating Section -->
     <div class="mt-4">
-      <app-rating [project]="project" (ratingSubmitted)="loadProject()"></app-rating>
+      <app-rating [project]="project()!" (ratingSubmitted)="refreshProject()"></app-rating>
     </div>
   }
 </div>

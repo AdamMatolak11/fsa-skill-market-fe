@@ -6,6 +6,7 @@ export interface Project {
   budget: number;
   status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   assignedFreelancerId?: string;
+  offersCount?: number;
   createdAt: string;
 }
 

@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Project } from '../project.model';
@@ -10,20 +11,19 @@ import { ProjectService } from '../project.service';
 import { finalize } from 'rxjs';
 
 @Component({
-  selector: 'app-project-detail',
+  selector: 'app-project-detail-page',
   standalone: true,
   imports: [CommonModule, FormsModule, OffersComponent, CreateOfferComponent, RatingComponent],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss'
 })
-export class ProjectDetailComponent implements OnInit {
-  @Input() project: Project | null = null;
-  @Output() backClicked = new EventEmitter<void>();
-  @Output() projectUpdated = new EventEmitter<Project>();
-
+export class ProjectDetailPageComponent implements OnInit {
   private keycloakService = inject(KeycloakService);
   private projectService = inject(ProjectService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
+  project = signal<Project | null>(null);
   editMode = signal(false);
   loading = signal(false);
   error = signal<string | null>(null);
@@ -32,50 +32,47 @@ export class ProjectDetailComponent implements OnInit {
 
   // Computed properties for access control
   isProjectOwner = computed(() => 
-    this.project?.clientId === this.keycloakService.getUserId()
+    this.project()?.clientId === this.keycloakService.getUserId()
   );
 
   canEdit = computed(() =>
     this.isProjectOwner() && 
     this.keycloakService.hasRole('CLIENT') && 
-    ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
+    ['OPEN', 'IN_PROGRESS'].includes(this.project()?.status || '')
   );
 
   canCancel = computed(() =>
     this.isProjectOwner() && 
     this.keycloakService.hasRole('CLIENT') && 
-    ['OPEN', 'IN_PROGRESS'].includes(this.project?.status || '')
+    ['OPEN', 'IN_PROGRESS'].includes(this.project()?.status || '')
   );
 
   ngOnInit(): void {
-    // Ensure edit mode is always false when component initializes
-    this.editMode.set(false);
-    this.error.set(null);
+    const projectId = this.route.snapshot.paramMap.get('projectId');
+    if (projectId) {
+      this.loadProject(projectId);
+    }
   }
 
-  loadProject(): void {
-    if (!this.project) return;
+  loadProject(projectId: string): void {
     this.loading.set(true);
-    this.projectService.getProject(this.project.id)
+    this.error.set(null);
+
+    this.projectService.getProjectDetail(projectId)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (project) => {
-          this.project = project;
-          this.projectUpdated.emit(project);
+          this.project.set(project);
         },
         error: (err) => {
-          // Suppress 405 error from offer creation refresh
-          if (err.status !== 405) {
-            this.error.set(err.error?.message || 'Failed to refresh project');
-          }
+          this.error.set(err.error?.message || 'Failed to load project');
         }
       });
   }
 
   goBack(): void {
-    this.backClicked.emit();
+    this.router.navigate(['/projects']);
   }
-// ... rest of the component
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -98,11 +95,11 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   toggleEditMode(): void {
-    if (this.project) {
+    if (this.project()) {
       this.editData = {
-        title: this.project.title,
-        description: this.project.description,
-        budget: this.project.budget
+        title: this.project()!.title,
+        description: this.project()!.description,
+        budget: this.project()!.budget
       };
     }
     this.editMode.set(!this.editMode());
@@ -110,17 +107,16 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   saveProject(): void {
-    if (!this.project) return;
+    if (!this.project()) return;
 
     this.loading.set(true);
     this.error.set(null);
 
-    this.projectService.updateProject(this.project.id, this.editData)
+    this.projectService.updateProject(this.project()!.id, this.editData)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (updatedProject) => {
-          this.project = updatedProject;
-          this.projectUpdated.emit(updatedProject);
+          this.project.set(updatedProject);
           this.editMode.set(false);
         },
         error: (err) => {
@@ -130,23 +126,27 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   cancelProject(): void {
-    if (!this.project) return;
+    if (!this.project()) return;
 
     if (!confirm('Are you sure you want to cancel this project?')) return;
 
     this.loading.set(true);
     this.error.set(null);
 
-    this.projectService.cancelProject(this.project.id)
+    this.projectService.cancelProject(this.project()!.id)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () => {
-          this.projectUpdated.emit({ ...this.project!, status: 'CANCELLED' } as Project);
           this.goBack();
         },
         error: (err) => {
           this.error.set(err.error?.message || 'Failed to cancel project');
         }
       });
+  }
+
+  refreshProject(): void {
+    if (!this.project()) return;
+    this.loadProject(this.project()!.id);
   }
 }

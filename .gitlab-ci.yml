@@ -1,4 +1,5 @@
 stages:
+  - test
   - build
   - deploy
 
@@ -8,6 +9,18 @@ variables:
   DOCKER_HOST: tcp://127.0.0.1:2375
   DOCKER_TLS_VERIFY: ""
   DOCKER_TLS_CERTDIR: ""
+
+test:
+  stage: test
+  image: node:22-alpine
+  script:
+    - npm ci
+    - npm run test -- --no-watch --browsers=ChromeHeadless
+  only:
+    - main
+  cache:
+    paths:
+      - node_modules/
 
 build:
   stage: build

@@ -13,12 +13,12 @@
     <div class="alert alert-danger">{{ error() }}</div>
   }
 
-  @if (offers().length === 0 && !loading()) {
+  @if (visibleOffers().length === 0 && !loading()) {
     <div class="alert alert-info">No offers yet</div>
   }
 
   <div class="row">
-    @for (offer of offers(); track offer.id) {
+    @for (offer of visibleOffers(); track offer.id) {
       <div class="col-12 mb-3">
         <div class="card">
           <div class="card-body">
@@ -58,7 +58,7 @@
               </div>
             }
 
-            @if (isFreelancer() && offer.status === 'PENDING') {
+            @if (isFreelancerRole() && offer.status === 'PENDING') {
               <div class="mt-3">
                 <button
                   class="btn btn-sm btn-outline-danger"
