@@ -15,7 +15,7 @@ test:
   image: node:22-alpine
   script:
     - npm ci
-    - npm run test -- --no-watch --browsers=ChromeHeadless
+    - npm run test -- --watch=false
   only:
     - main
   cache:
