@@ -13,6 +13,8 @@ import { ProjectDetailComponent } from './project-detail.component';
   template: `
     <app-project-detail
       [project]="project()"
+      [loading]="loading"
+      [error]="error"
       (backClicked)="goBack()"
       (projectUpdated)="refreshProject()">
     </app-project-detail>
@@ -24,6 +26,8 @@ export class ProjectDetailPageComponent implements OnInit {
   private router = inject(Router);
 
   project = signal<Project | null>(null);
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   ngOnInit(): void {
     const projectId = this.route.snapshot.paramMap.get('projectId');
@@ -33,13 +37,17 @@ export class ProjectDetailPageComponent implements OnInit {
   }
 
   loadProject(projectId: string): void {
+    this.loading.set(true);
+    this.error.set(null);
     this.projectService.getProjectDetail(projectId)
+      .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (project) => {
           this.project.set(project);
         },
         error: (err) => {
           console.error('Failed to load project', err);
+          this.error.set(err.error?.message || 'Failed to load project');
         }
       });
   }

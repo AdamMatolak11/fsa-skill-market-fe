@@ -18,6 +18,9 @@ import { finalize } from 'rxjs';
 })
 export class ProjectDetailComponent implements OnInit {
   project = signal<Project | null>(null);
+  @Input() loading = signal(false);
+  @Input() error = signal<string | null>(null);
+
   @Input('project') set projectInput(value: Project | null) {
     this.project.set(value);
   }
@@ -28,8 +31,6 @@ export class ProjectDetailComponent implements OnInit {
   private projectService = inject(ProjectService);
 
   editMode = signal(false);
-  loading = signal(false);
-  error = signal<string | null>(null);
 
   editData = { title: '', description: '', budget: 0 };
 
